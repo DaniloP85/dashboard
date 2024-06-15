@@ -1,0 +1,19 @@
+syntax = "proto3";
+
+package loteria;
+
+service LoteriaService {
+  rpc EnviarLoteria(LoteriaRequest) returns (LoteriaResponse);
+}
+
+message LoteriaRequest {
+  string loteria = 1;
+  string fluxo = 2;
+  int32 concurso = 3;
+  int32 total_concursos = 4;
+  int32 total_geral = 5;
+}
+
+message LoteriaResponse {
+  string message = 1;
+}
