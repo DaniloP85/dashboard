@@ -32,6 +32,8 @@ def run_streamlit():
     st.title('Servidor gRPC - Informações Recebidas')
 
     progress_bars = {}
+    count_sucesso = 0
+    total = 0
 
     while True:
         if mensagens:
@@ -39,15 +41,28 @@ def run_streamlit():
                 loteria = msg["loteria"]
                 concurso = msg["concurso"]
                 total_concursos = msg["total_concursos"]
-                progresso = concurso / total_concursos if total_concursos != 0 else 0
+                fluxo = msg["fluxo"]
+                total_geral = msg["total_geral"]
 
-                if loteria not in progress_bars:
-                    progress_bars[loteria] = st.progress(0, f"{loteria}")
+                if total_geral != 0:
+                    total = total_geral
 
-                progress_bars[loteria].progress(progresso, f"{loteria}: {concurso}/{total_concursos} ({progresso:.2%})")
-                logging.basicConfig(level=logging.INFO,
-                                    format='%(loteria)s - %(concurso)s',
-                                    datefmt='%Y-%m-%d %H:%M:%S')
+                if fluxo == "processar":
+                    progresso = concurso / total_concursos if total_concursos != 0 else 0
+                    if loteria not in progress_bars:
+                        progress_bars[loteria] = st.progress(0, f"{loteria}")
+
+                    progress_bars[loteria].progress(progresso, f"{loteria}: {concurso}/{total_concursos} ({progresso:.2%})")
+                if fluxo == "reprocessar":
+                    print(f"Recebeu mensagem: {fluxo} total_geral{total_geral}: {loteria}: {concurso}")
+                if fluxo == "guardar":
+                    progresso2 = count_sucesso / total if count_sucesso != 0 else 0
+                    count_sucesso += 1
+                    if 'sucesso' not in progress_bars:
+                        progress_bars['sucesso'] = st.progress(0, f"sucesso")
+
+                    progress_bars['sucesso'].progress(progresso2, f"sucesso: {count_sucesso}/{total} ({progresso2:.2%})")
+
             mensagens.clear()
 
 if __name__ == '__main__':
